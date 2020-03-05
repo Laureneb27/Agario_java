@@ -20,17 +20,19 @@ public class Data implements DataService{
   ArrayList<Position> fruits;
   Random random;
 
-  public Data(){
-    //hercules = new Heroes;
-    heroesPosition = new Position(250,150);
-    stepNumber = 0;
-    minX = HardCodedParameters.minX;
-    maxX = HardCodedParameters.maxX;
-    minY = HardCodedParameters.minY;
-    maxY = HardCodedParameters.maxY;
-    
-    fruits = new ArrayList<Position>();
-    random = new Random();
+  public Data(){}
+  
+  public void init() {
+	//hercules = new Heroes;
+	    heroesPosition = new Position(250,150);
+	    stepNumber = 0;
+	    minX = HardCodedParameters.minX;
+	    maxX = HardCodedParameters.maxX;
+	    minY = HardCodedParameters.minY;
+	    maxY = HardCodedParameters.maxY;
+	    
+	    fruits = new ArrayList<Position>();
+	    random = new Random();
   }
 
   @Override
@@ -63,7 +65,7 @@ public class Data implements DataService{
   
   @Override
   public void addFruit(){
-    if (fruits.size()>(maxX-minX-2)*(maxY-minY-2)) return;
+    if (fruits.size()>(maxX-minX-10)*(maxY-minY-10)) return;
     int newX, newY;
     boolean found = false;
     while (!found) {

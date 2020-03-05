@@ -9,8 +9,9 @@ package tools;
 public class HardCodedParameters {
   //---HARD-CODED-PARAMETERS---//
   public static String defaultParamFileName = "in.parameters";
-  public static final int defaultWidth = 1280, defaultHeight = 1024;
+  public static final int defaultWidth = 1025, defaultHeight = 550,heroesStep = 10;
   public static final int enginePaceMillis = 1000;
+  public static final double friction = 0.50;
   public static final double resolutionShrinkFactor = 0.95,
                              userBarShrinkFactor = 0.25,
                              menuBarShrinkFactor = 0.5,
@@ -23,7 +24,7 @@ public class HardCodedParameters {
                           displayZoneXZoomStep = 5,
                           displayZoneYZoomStep = 5;
   public static final double displayZoneAlphaZoomStep = 0.98;
-  public static final int minX = 0, maxX = 500, minY = 0, maxY = 250;
+  public static final int minX = 0, maxX = 1000, minY = 0, maxY = 500;
 
   //---MISCELLANOUS---//
   public static final Object loadingLock = new Object();

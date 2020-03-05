@@ -7,43 +7,49 @@
 package algorithm;
 
 import specifications.AlgorithmService;
+import specifications.EngineService;
+import specifications.RequireEngineService;
 import specifications.SimulatorService;
+import tools.User;
 import specifications.RequireSimulatorService;
 
 import java.util.Random;
 
-public class RandomWalker implements AlgorithmService, RequireSimulatorService{
-  private SimulatorService simulator;
+public class RandomWalker implements AlgorithmService, RequireEngineService{
+  private EngineService engine;
   private Random gen;
 
-  public RandomWalker() {
+  public RandomWalker() {}
+
+  @Override
+  public void bindEngineService(EngineService service){
+    engine = service;
+  }
+  
+  @Override
+  public void init(){
     gen = new Random();
   }
 
   @Override
-  public void bindSimulatorService(SimulatorService service){
-    simulator = service;
-  }
-
-  @Override
   public void activation(){
-    simulator.moveRight();
+	    engine.setHeroesCommand(User.COMMAND.NONE);
   }
   
   @Override
   public void stepAction(){
-    switch (gen.nextInt(4)){
+	  switch (gen.nextInt(4)){
       case 0:
-        simulator.moveRight();
+    	  engine.setHeroesCommand(User.COMMAND.LEFT);
         break;
       case 1:
-        simulator.moveRight();
+    	  engine.setHeroesCommand(User.COMMAND.RIGHT);
         break;
       case 2:
-        simulator.moveDown();
+    	  engine.setHeroesCommand(User.COMMAND.UP);
         break;
       default:
-        simulator.moveDown();
+    	  engine.setHeroesCommand(User.COMMAND.DOWN);
         break;
     }
   }

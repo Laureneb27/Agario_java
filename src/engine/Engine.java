@@ -1,30 +1,36 @@
 /* ******************************************************
- * Simulator alpha - Composants logiciels 2015.
+ * Project alpha - Composants logiciels 2015.
  * Copyright (C) 2015 <Binh-Minh.Bui-Xuan@ens-lyon.org>.
  * GPL version>=3 <http://www.gnu.org/licenses/>.
- * $Id: engine/Engine.java 2015-03-09 buixuan.
+ * $Id: engine/Engine.java 2015-03-11 buixuan.
  * ******************************************************/
 package engine;
+
+import tools.HardCodedParameters;
+import tools.User;
 
 import specifications.EngineService;
 import specifications.DataService;
 import specifications.RequireDataService;
-import specifications.AlgorithmService;
-import specifications.RequireAlgorithmService;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import data.Position;
 
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class Engine implements EngineService, RequireDataService, RequireAlgorithmService{
+public class Engine implements EngineService, RequireDataService{
+  private static final double friction=HardCodedParameters.friction,
+                              heroesStep=HardCodedParameters.heroesStep;
   private Timer engineClock;
   private DataService data;
-  private AlgorithmService algorithm;
-  private Random random;
+  private User.COMMAND command;
+  private Random gen;
+  private boolean moveLeft,moveRight,moveUp,moveDown;
+  private double heroesVX,heroesVY;
 
-  public Engine(){random = new Random();}
+  public Engine(){}
 
   @Override
   public void bindDataService(DataService service){
@@ -32,53 +38,73 @@ public class Engine implements EngineService, RequireDataService, RequireAlgorit
   }
   
   @Override
-  public void bindAlgorithmService(AlgorithmService service){
-    algorithm=service;
-  }
-  
-  @Override
   public void init(){
     engineClock = new Timer();
+    command = User.COMMAND.NONE;
+    gen = new Random();
+    moveLeft = false;
+    moveRight = false;
+    moveUp = false;
+    moveDown = false;
+    heroesVX = 0;
+    heroesVY = 0;
   }
 
   @Override
   public void start(){
-    algorithm.activation();
     engineClock.schedule(new TimerTask(){
       public void run() {
-        System.out.println("Game step #"+data.getStepNumber()+": checked.");
-        algorithm.stepAction();
-        if (ding()) data.addFruit();
+        //System.out.println("Game step #"+data.getStepNumber()+": checked.");
+
+        updateSpeedHeroes();
+        updateCommandHeroes();
+        updatePositionHeroes();
+        
+        int score=0;
+
+        //data.addScore(score);
+
         data.setStepNumber(data.getStepNumber()+1);
       }
-    },0,100);
+    },0,HardCodedParameters.enginePaceMillis);
   }
-  
-  private boolean ding() {return random.nextInt(100)<=20;}
-  
+
   @Override
-  public void moveLeft(){
-	  if (data.getHeroesPosition().x-1>data.getMinX())
-		  data.setHeroesPosition(new Position(data.getHeroesPosition().x-1,data.getHeroesPosition().y));
-    
+  public void stop(){
+    engineClock.cancel();
   }
-  
+
   @Override
-  public void moveRight(){
-	  if (data.getHeroesPosition().x+1<data.getMaxX())
-		  data.setHeroesPosition(new Position(data.getHeroesPosition().x+1,data.getHeroesPosition().y));
-    
+  public void setHeroesCommand(User.COMMAND c){
+    if (c==User.COMMAND.LEFT) moveLeft=true;
+    if (c==User.COMMAND.RIGHT) moveRight=true;
+    if (c==User.COMMAND.UP) moveUp=true;
+    if (c==User.COMMAND.DOWN) moveDown=true;
   }
   
   @Override
-  public void moveUp(){
-	  if (data.getHeroesPosition().y-1>data.getMinY())
-		  data.setHeroesPosition(new Position(data.getHeroesPosition().x,data.getHeroesPosition().y-1));
+  public void releaseHeroesCommand(User.COMMAND c){
+    if (c==User.COMMAND.LEFT) System.out.println("ddd");moveLeft=false;
+    if (c==User.COMMAND.RIGHT) moveRight=false;
+    if (c==User.COMMAND.UP) moveUp=false;
+    if (c==User.COMMAND.DOWN) moveDown=false;
+  }
+
+  private void updateSpeedHeroes(){
+    heroesVX*=friction;
+    heroesVY*=friction;
+  }
+
+  private void updateCommandHeroes(){
+    if (moveLeft) heroesVX-=heroesStep;
+    if (moveRight) heroesVX+=heroesStep;
+    if (moveUp) heroesVY-=heroesStep;
+    if (moveDown) heroesVY+=heroesStep;
   }
   
-  @Override
-  public void moveDown(){
-	  if (data.getHeroesPosition().y+1<data.getMaxY())
-		  data.setHeroesPosition(new Position(data.getHeroesPosition().x,data.getHeroesPosition().y+1));
+  private void updatePositionHeroes(){
+    data.setHeroesPosition(new Position(data.getHeroesPosition().x+heroesVX,data.getHeroesPosition().y+heroesVY));
+    //if (data.getHeroesPosition().x<0) data.setHeroesPosition(new Position(0,data.getHeroesPosition().y));
+    //etc...
   }
 }

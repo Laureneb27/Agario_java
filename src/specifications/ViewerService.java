@@ -6,10 +6,12 @@
  * ******************************************************/
 package specifications;
 
-import javafx.scene.Group;
+import javafx.scene.Parent;
 
 public interface ViewerService{
   public void init();
   public void startViewer();
-  public Group getPanel();
+  public Parent getPanel();
+  public void setMainWindowWidth(double w);
+  public void setMainWindowHeight(double h);
 }
